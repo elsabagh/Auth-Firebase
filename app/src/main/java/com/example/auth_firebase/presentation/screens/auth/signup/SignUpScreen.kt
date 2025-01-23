@@ -1,4 +1,4 @@
-package com.example.auth_firebase.presentation.screens.signin
+package com.example.auth_firebase.presentation.screens.auth.signup
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -39,75 +39,56 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.auth_firebase.R
 import com.example.auth_firebase.presentation.common.components.EmailField
 import com.example.auth_firebase.presentation.common.components.PasswordField
-import com.example.auth_firebase.presentation.ui.theme.AuthFirebaseTheme
+import com.example.auth_firebase.presentation.common.components.PasswordFieldWithConditions
 import com.example.auth_firebase.presentation.ui.theme.PrimaryColor
 import com.example.auth_firebase.presentation.ui.theme.SecondaryColor
 import com.example.auth_firebase.presentation.ui.theme.gray1
 import com.example.auth_firebase.presentation.ui.theme.gray2
 
 @Composable
-fun SignInScreen(
-    onSignInClick: () -> Unit = {},
-    onSignInClickGuest: () -> Unit = {},
-    onSignUpClickNav: () -> Unit = {},
-    onAppStart: () -> Unit = {},
+fun SignUpScreen(
+    onSignUpClick: () -> Unit,
+    onSignInClickNav: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val signUpViewModel: SignUpViewModel = hiltViewModel()
+    val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
+    val isAccountCreated by signUpViewModel.isAccountCreated.collectAsStateWithLifecycle()
 
-    val signInViewModel: SignInViewModel = hiltViewModel()
-    val uiState by signInViewModel.uiState.collectAsStateWithLifecycle()
-    val isSignInSucceeded by signInViewModel.isSignInSucceeded.collectAsStateWithLifecycle()
-    val isAccountReady by signInViewModel.isAccountReady.collectAsStateWithLifecycle()
-
-    LaunchedEffect(isAccountReady) {
-        if (isAccountReady) {
-            onAppStart()
+    LaunchedEffect(isAccountCreated) {
+        if (isAccountCreated) {
+            onSignUpClick()
+            signUpViewModel.resetIsAccountCreated()
         }
     }
 
-    LaunchedEffect(isSignInSucceeded) {
-        if (isSignInSucceeded) {
-            onSignInClick()
-            onSignInClickGuest()
-            signInViewModel.resetIsSignInSucceeded()
-        }
-    }
+    val onSignUpClickMemoized: () -> Unit = remember { signUpViewModel::createAccount }
+    val onEmailChange: (String) -> Unit = remember { signUpViewModel::onEmailChange }
+    val onPasswordChange: (String) -> Unit = remember { signUpViewModel::onPasswordChange }
+    val onConfirmPasswordChange: (String) -> Unit =
+        remember { signUpViewModel::onConfirmPasswordChange }
+    val onSignInClick: () -> Unit = remember { onSignInClickNav }
 
-    val onSignInClickMemoized: () -> Unit = remember { signInViewModel::signInToAccount }
-    val onEmailChange: (String) -> Unit = remember { signInViewModel::onEmailChange }
-    val onPasswordChange: (String) -> Unit = remember { signInViewModel::onPasswordChange }
-    val onSignInClickGuestMemoized: () -> Unit =
-        remember { signInViewModel::createAnonymousAccount }
-    val onSignUpClickNavMemoized = remember { onSignUpClickNav }
-    val onAppStartMemoized = remember { signInViewModel::startTheApp }
-
-
-    SignInScreenContent(
+    SignUpScreenContent(
         uiState = uiState,
         onEmailChange = onEmailChange,
         onPasswordChange = onPasswordChange,
-        onSignInClick = onSignInClickMemoized,
-        onSignInClickGuest = onSignInClickGuestMemoized,
-        onSignUpClick = onSignUpClickNavMemoized,
-        onAppStart = onAppStartMemoized
-
+        onConfirmPasswordChange = onConfirmPasswordChange,
+        onSignUpClick = onSignUpClickMemoized,
+        onSignInClick = onSignInClick
     )
 }
 
 @Composable
-fun SignInScreenContent(
-    uiState: SignInState,
+fun SignUpScreenContent(
+    uiState: SignUpState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
-    onSignInClick: () -> Unit,
-    onSignInClickGuest: () -> Unit,
+    onConfirmPasswordChange: (String) -> Unit,
     onSignUpClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    onAppStart: () -> Unit
+    onSignInClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(Unit) {
-        onAppStart()
-    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
@@ -116,24 +97,26 @@ fun SignInScreenContent(
             modifier = Modifier
                 .padding(top = 64.dp)
                 .align(Alignment.CenterHorizontally),
-            text = stringResource(R.string.sign_in),
+            text = stringResource(R.string.create_your_account),
             style = MaterialTheme.typography.bodyLarge,
             color = PrimaryColor,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.padding(8.dp))
+        Spacer(modifier = Modifier.padding(4.dp))
 
         Text(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally),
-            text = stringResource(R.string.welcome_back),
+            text = "Join App",
             style = MaterialTheme.typography.bodyMedium,
             color = SecondaryColor,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium
         )
+
+        Spacer(modifier = Modifier.padding(16.dp))
 
         EmailField(
             value = uiState.email,
@@ -146,7 +129,7 @@ fun SignInScreenContent(
 
         Spacer(modifier = Modifier.padding(4.dp))
 
-        PasswordField(
+        PasswordFieldWithConditions(
             value = uiState.password,
             placeholder = R.string.password,
             onNewValue = onPasswordChange,
@@ -157,21 +140,19 @@ fun SignInScreenContent(
 
         Spacer(modifier = Modifier.padding(4.dp))
 
-        Text(
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(end = 16.dp),
-            text = stringResource(R.string.forgot_password),
-            style = MaterialTheme.typography.bodySmall,
-            color = SecondaryColor,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold
+        PasswordField(
+            value = uiState.confirmPassword,
+            placeholder = R.string.confirm_password,
+            onNewValue = onConfirmPasswordChange,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         )
 
         Spacer(modifier = Modifier.padding(16.dp))
 
         Button(
-            onClick = onSignInClick,
+            onClick = onSignUpClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
@@ -180,7 +161,7 @@ fun SignInScreenContent(
             )
         ) {
             Text(
-                text = stringResource(R.string.sign_in),
+                text = stringResource(R.string.sign_up),
                 color = Color.White,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold
@@ -191,22 +172,8 @@ fun SignInScreenContent(
 
         Text(
             modifier = Modifier
-                .clickable(
-                    onClick = {
-                        onSignInClickGuest()
-                    }
-                )
                 .align(Alignment.CenterHorizontally),
-            text = buildAnnotatedString {
-                append("Log in as a ")
-                withStyle(
-                    style = SpanStyle(color = PrimaryColor)
-                )
-                {
-                    append("guest")
-                }
-                append(" or ")
-            },
+            text = "or Sign up with",
             style = MaterialTheme.typography.bodyMedium,
             color = SecondaryColor,
             fontSize = 12.sp,
@@ -240,7 +207,7 @@ fun SignInScreenContent(
                 )
                 Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icon and text
                 Text(
-                    text = stringResource(R.string.sign_in_with_google),
+                    text = stringResource(R.string.sign_up_with_google),
                     color = gray1,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -279,7 +246,7 @@ fun SignInScreenContent(
                 )
                 Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icon and text
                 Text(
-                    text = stringResource(R.string.sign_in_with_facebook),
+                    text = stringResource(R.string.sign_up_with_facebook),
                     color = gray1,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -297,17 +264,17 @@ fun SignInScreenContent(
             modifier = Modifier
                 .clickable(
                     onClick = {
-                        onSignUpClick()
+                        onSignInClick()
                     }
                 )
                 .align(Alignment.CenterHorizontally),
             text = buildAnnotatedString {
-                append(stringResource(R.string.don_t_have_an_account_sign_up))
+                append(stringResource(R.string.already_have_an_account_sign_in))
                 withStyle(
                     style = SpanStyle(color = PrimaryColor)
                 )
                 {
-                    append(" Sign up")
+                    append(" Sign in")
                 }
             },
             style = MaterialTheme.typography.bodyMedium,
@@ -320,17 +287,13 @@ fun SignInScreenContent(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun SignInPreview() {
-    AuthFirebaseTheme {
-        SignInScreenContent(
-            uiState = SignInState(),
-            onEmailChange = {},
-            onPasswordChange = {},
-            onSignInClick = {},
-            onSignInClickGuest = {},
-            onSignUpClick = {},
-            onAppStart = {}
-        )
-    }
-
+fun SignUpScreenPreview() {
+    SignUpScreenContent(
+        uiState = SignUpState(),
+        onEmailChange = {},
+        onPasswordChange = {},
+        onConfirmPasswordChange = {},
+        onSignUpClick = {},
+        onSignInClick = {}
+    )
 }

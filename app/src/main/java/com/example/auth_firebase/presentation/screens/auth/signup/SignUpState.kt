@@ -1,4 +1,4 @@
-package com.example.auth_firebase.presentation.screens.signup
+package com.example.auth_firebase.presentation.screens.auth.signup
 
 data class SignUpState(
     val email: String = "",

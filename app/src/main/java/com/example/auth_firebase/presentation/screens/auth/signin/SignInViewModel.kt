@@ -1,4 +1,4 @@
-package com.example.auth_firebase.presentation.screens.signin
+package com.example.auth_firebase.presentation.screens.auth.signin
 
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
