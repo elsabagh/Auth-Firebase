@@ -11,6 +11,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.auth_firebase.R
 import com.example.auth_firebase.presentation.common.components.EmailField
 import com.example.auth_firebase.presentation.ui.theme.PrimaryColor
@@ -31,17 +35,30 @@ fun ForgetPasswordScreen(
     onSendClick: () -> Unit,
     onBackClick: () -> Unit,
 ) {
+    val viewModel: ForgetPasswordViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
 
     val onBackClickMemoized: () -> Unit = remember { onBackClick }
+    val onSendClickMemoized: () -> Unit = remember { viewModel::sendResetPasswordEmail }
+    val onEmailChange: (String) -> Unit = remember { viewModel::onEmailChange }
+
+    LaunchedEffect(uiState.isEmailSent) {
+        if (uiState.isEmailSent) {
+            onSendClick()
+        }
+    }
     ForgetPasswordContentScreen(
-        onSendClick = onSendClick,
+        uiState = uiState,
+        onSendClick = onSendClickMemoized,
         onBackClick = onBackClickMemoized,
-        onEmailChange = {},
-        )
+        onEmailChange = onEmailChange,
+    )
 }
 
 @Composable
 fun ForgetPasswordContentScreen(
+    uiState: ForgetPasswordState,
     onSendClick: () -> Unit,
     onBackClick: () -> Unit,
     onEmailChange: (String) -> Unit,
@@ -93,7 +110,7 @@ fun ForgetPasswordContentScreen(
         )
 
         EmailField(
-            value = "",
+            value = uiState.email,
             onNewValue = onEmailChange,
             modifier = modifier
                 .fillMaxWidth()
@@ -102,7 +119,9 @@ fun ForgetPasswordContentScreen(
         )
 
         Button(
-            onClick = onSendClick,
+            onClick = {
+                onSendClick()
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp),
@@ -127,5 +146,6 @@ fun ForgetPasswordScreenPreview() {
         onSendClick = {},
         onBackClick = {},
         onEmailChange = {},
+        uiState = ForgetPasswordState()
     )
 }

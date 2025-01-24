@@ -3,6 +3,7 @@ package com.example.auth_firebase.presentation.screens.auth.otpCode
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -12,7 +13,7 @@ private const val VALID_OTP_CODE = "1414"
 @HiltViewModel
 class OtpViewModel@Inject constructor() : ViewModel() {
     private val _state = MutableStateFlow(OtpState())
-    val state = _state.asStateFlow()
+    val state: StateFlow<OtpState> = _state.asStateFlow()
 
     fun onAction(action: OtpAction) {
         when(action) {

@@ -22,4 +22,10 @@ interface AccountRepository {
     suspend fun deleteAccount()
 
     suspend fun signOut()
+
+    suspend fun changePassword(newPassword: String)
+
+    suspend fun sendPasswordResetEmail(email: String)
+
+    suspend fun verifyPasswordResetCode(code: String): String
 }

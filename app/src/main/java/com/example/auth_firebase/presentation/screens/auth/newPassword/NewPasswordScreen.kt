@@ -11,7 +11,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +27,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.auth_firebase.R
 import com.example.auth_firebase.presentation.common.components.PasswordField
 import com.example.auth_firebase.presentation.ui.theme.PrimaryColor
@@ -34,16 +38,22 @@ fun NewPasswordScreen(
     onSavaClick: () -> Unit,
     onBackClick: () -> Unit,
 ) {
+    val viewModel: NewPasswordViewModel = hiltViewModel()
+    var newPassword by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
     val onBackClickMemoized: () -> Unit = remember { onBackClick }
-    val onSavaClickMemoized: () -> Unit = remember { onSavaClick }
-
+    val onSavaClickMemoized: () -> Unit = {
+        viewModel.onPasswordChange(newPassword)
+        viewModel.onConfirmPasswordChange(confirmPassword)
+        onSavaClick()
+    }
 
     NewPasswordContentScreen(
         onSavaClick = onSavaClickMemoized,
         onBackClick = onBackClickMemoized,
-        onPasswordChange = {},
-        onConfirmPasswordChange = {},
+        onPasswordChange = { newPassword = it },
+        onConfirmPasswordChange = { confirmPassword = it },
     )
 
 }

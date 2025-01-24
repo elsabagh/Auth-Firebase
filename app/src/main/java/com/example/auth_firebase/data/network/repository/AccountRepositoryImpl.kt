@@ -5,14 +5,12 @@ import com.example.auth_firebase.data.model.User
 import com.example.auth_firebase.domain.repository.AccountRepository
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import java.io.IOException
 import javax.inject.Inject
-import kotlin.coroutines.cancellation.CancellationException
 
 class AccountRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth
@@ -104,6 +102,37 @@ class AccountRepositoryImpl @Inject constructor(
             throw Exception("Failed to sign out: ${e.message}", e)
         } catch (e: IOException) {
             throw IOException("Network error occurred during sign-out: ${e.message}", e)
+        }
+    }
+
+
+    override suspend fun changePassword(newPassword: String) {
+        try {
+            firebaseAuth.currentUser!!.updatePassword(newPassword).await()
+        } catch (e: Exception) {
+            throw Exception("Failed to change password: ${e.message}", e)
+        } catch (e: IOException) {
+            throw IOException("Network error occurred during password change: ${e.message}", e)
+        }
+    }
+
+    override suspend fun sendPasswordResetEmail(email: String) {
+        try {
+            firebaseAuth.sendPasswordResetEmail(email).await()
+        } catch (e: Exception) {
+            throw Exception("Failed to send password reset email: ${e.message}", e)
+        } catch (e: IOException) {
+            throw IOException("Network error occurred during password reset: ${e.message}", e)
+        }
+    }
+
+    override suspend fun verifyPasswordResetCode(code: String): String {
+        return try {
+            firebaseAuth.verifyPasswordResetCode(code).await()
+        } catch (e: Exception) {
+            throw Exception("Failed to verify password reset code: ${e.message}", e)
+        } catch (e: IOException) {
+            throw IOException("Network error occurred during password reset verification: ${e.message}", e)
         }
     }
 

@@ -92,12 +92,9 @@ fun NavGraph(
         }
         composable(route = AppDestination.OtpCodeDestination.route) {
             OtpCodeScreen(
-                onVerifyOtpCodeClick = {
-
+                onVerifyOtpCodeClick = { /* Verify OTP code logic */
                 },
-                onResendOtpCodeClick = {
-
-                },
+                onResendOtpCodeClick = { /* Resend OTP code logic */ },
                 onBackClick = {
                     appState.navigateSingleTopToAndPopupTo(
                         route = AppDestination.ForgotPasswordDestination.route,
