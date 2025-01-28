@@ -21,7 +21,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun HomeScreen(
     onSignOutClick: () -> Unit,
-    onDeleteMyAccountClick: () -> Unit
+    onDeleteMyAccountClick: () -> Unit,
+    onChangePassClickNav: () -> Unit
 ) {
 
     val homeViewModel: HomeViewmodel = hiltViewModel()
@@ -48,9 +49,14 @@ fun HomeScreen(
         homeViewModel::deleteAccount
     }
 
+    val onChangePassClickNavMemoized: () -> Unit = remember {
+        onChangePassClickNav
+    }
+
     HomeScreenContent(
         onSignOutClick = onSignOutClickMemoized,
-        onDeleteMyAccountClick = onDeleteMyAccountClickMemoized
+        onDeleteMyAccountClick = onDeleteMyAccountClickMemoized,
+        onChangePassClickNav = onChangePassClickNavMemoized
     )
 
 
@@ -59,7 +65,8 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     onSignOutClick: () -> Unit,
-    onDeleteMyAccountClick: () -> Unit
+    onDeleteMyAccountClick: () -> Unit,
+    onChangePassClickNav: () -> Unit
 ) {
 
     Column(
@@ -81,6 +88,15 @@ fun HomeScreenContent(
         Button(onClick = onDeleteMyAccountClick) {
             Text(text = "Delete Account")
         }
+
+        Button(
+            modifier = Modifier.padding(top = 24.dp),
+            onClick = {
+                onChangePassClickNav()
+            }
+        ) {
+            Text(text = "Change Password")
+        }
     }
 
 }
@@ -90,6 +106,7 @@ fun HomeScreenContent(
 fun HomeScreenPreview() {
     HomeScreen(
         onSignOutClick = {},
-        onDeleteMyAccountClick = {}
+        onDeleteMyAccountClick = {},
+        onChangePassClickNav = {}
     )
 }

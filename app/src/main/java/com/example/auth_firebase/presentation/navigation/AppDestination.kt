@@ -26,5 +26,4 @@ interface AppDestination {
     object HomeDestination : AppDestination {
         override val route = "Home"
     }
-
 }

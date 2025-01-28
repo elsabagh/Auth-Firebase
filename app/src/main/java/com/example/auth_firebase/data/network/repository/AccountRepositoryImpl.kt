@@ -107,12 +107,17 @@ class AccountRepositoryImpl @Inject constructor(
 
 
     override suspend fun changePassword(newPassword: String) {
-        try {
-            firebaseAuth.currentUser!!.updatePassword(newPassword).await()
-        } catch (e: Exception) {
-            throw Exception("Failed to change password: ${e.message}", e)
-        } catch (e: IOException) {
-            throw IOException("Network error occurred during password change: ${e.message}", e)
+        val user = firebaseAuth.currentUser
+        if (user != null) {
+            try {
+                user.updatePassword(newPassword).await()
+            } catch (e: Exception) {
+                throw Exception("Failed to change password: ${e.message}", e)
+            } catch (e: IOException) {
+                throw IOException("Network error occurred during password change: ${e.message}", e)
+            }
+        } else {
+            throw Exception("No authenticated user found")
         }
     }
 

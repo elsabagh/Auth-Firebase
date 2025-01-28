@@ -42,6 +42,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun OtpCodeScreen(
+    email: String,
     onVerifyOtpCodeClick: () -> Unit,
     onResendOtpCodeClick: () -> Unit,
     onBackClick: () -> Unit,
@@ -79,6 +80,7 @@ fun OtpCodeScreen(
     }
 
     OtpCodeContentScreen(
+        email = email,
         state = state,
         onVerifyOtpCodeClick = onVerifyOtpCodeClickMemoized,
         onResendOtpCodeClick = onResendOtpCodeClickMemoized,
@@ -100,6 +102,7 @@ fun OtpCodeScreen(
 
 @Composable
 fun OtpCodeContentScreen(
+    email: String,
     state: OtpState,
     onVerifyOtpCodeClick: () -> Unit,
     onResendOtpCodeClick: () -> Unit,
@@ -159,7 +162,7 @@ fun OtpCodeContentScreen(
             modifier = modifier
                 .padding(top = 4.dp)
                 .align(Alignment.CenterHorizontally),
-            text = "Enter OTP sent to your email",
+            text = "Enter OTP sent to $email",
             style = MaterialTheme.typography.bodyMedium,
             color = gray1,
             fontSize = 14.sp,
@@ -260,6 +263,7 @@ fun OtpCodeScreenPreview() {
         onVerifyOtpCodeClick = {},
         onResendOtpCodeClick = {},
         onBackClick = {},
-        onConfirmDialogClick = {}
+        onConfirmDialogClick = {},
+        email = ""
     )
 }

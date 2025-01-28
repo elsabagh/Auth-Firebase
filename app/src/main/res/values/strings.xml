@@ -54,6 +54,7 @@
     <string name="your_otp_code_has_been_verified_successfully">Your OTP code has been verified successfully</string>
     <string name="reset_your_password">Reset  your password</string>
     <string name="please_enter_new_password">please enter new password</string>
-
+    <string name="password_changed_successfully">Password changed successfully</string>
+    <string name="password_change_failed">Password change failed</string>
 
 </resources>

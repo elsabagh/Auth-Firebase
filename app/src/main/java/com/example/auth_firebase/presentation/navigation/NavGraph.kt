@@ -1,15 +1,21 @@
 package com.example.auth_firebase.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.auth_firebase.ContainerAppState
 import com.example.auth_firebase.presentation.navigation.AppDestination.SignInDestination
 import com.example.auth_firebase.presentation.screens.auth.newPassword.NewPasswordScreen
 import com.example.auth_firebase.presentation.screens.auth.otpCode.OtpCodeScreen
 import com.example.auth_firebase.presentation.screens.home.HomeScreen
 import com.example.auth_firebase.presentation.screens.auth.resetPassword.ForgetPasswordScreen
+import com.example.auth_firebase.presentation.screens.auth.resetPassword.ForgetPasswordViewModel
 import com.example.auth_firebase.presentation.screens.auth.signin.SignInScreen
 import com.example.auth_firebase.presentation.screens.auth.signup.SignUpScreen
 
@@ -75,10 +81,12 @@ fun NavGraph(
             )
         }
         composable(route = AppDestination.ForgotPasswordDestination.route) {
+            val viewModel: ForgetPasswordViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             ForgetPasswordScreen(
                 onSendClick = {
                     appState.navigateSingleTopToAndPopupTo(
-                        route = AppDestination.OtpCodeDestination.route,
+                        route = "${AppDestination.OtpCodeDestination.route}/${uiState.email}",
                         popUpToRoute = AppDestination.OtpCodeDestination.route
                     )
                 },
@@ -90,8 +98,13 @@ fun NavGraph(
                 },
             )
         }
-        composable(route = AppDestination.OtpCodeDestination.route) {
+        composable(
+            route = "${AppDestination.OtpCodeDestination.route}/{email}",
+            arguments = listOf(navArgument("email") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
             OtpCodeScreen(
+                email = email,
                 onVerifyOtpCodeClick = { /* Verify OTP code logic */
                 },
                 onResendOtpCodeClick = { /* Resend OTP code logic */ },
@@ -111,19 +124,19 @@ fun NavGraph(
         }
         composable(route = AppDestination.NewPasswordDestination.route) {
             NewPasswordScreen(
-                 onSavaClick = {
-                     appState.navigateSingleTopToAndPopupTo(
-                         route = SignInDestination.route,
-                         popUpToRoute = SignInDestination.route
-                     )
-                 },
-                 onBackClick = {
-                     appState.navigateSingleTopToAndPopupTo(
-                         route = SignInDestination.route,
-                         popUpToRoute = SignInDestination.route
-                     )
-                 }
-             )
+                onSavaClick = {
+                    appState.navigateSingleTopToAndPopupTo(
+                        route = SignInDestination.route,
+                        popUpToRoute = SignInDestination.route
+                    )
+                },
+                onBackClick = {
+                    appState.navigateSingleTopToAndPopupTo(
+                        route = SignInDestination.route,
+                        popUpToRoute = SignInDestination.route
+                    )
+                }
+            )
         }
         composable(route = AppDestination.HomeDestination.route) {
             HomeScreen(
@@ -137,6 +150,12 @@ fun NavGraph(
                     appState.navigateSingleTopToAndPopupTo(
                         route = SignInDestination.route,
                         popUpToRoute = SignInDestination.route
+                    )
+                },
+                onChangePassClickNav = {
+                    appState.navigateSingleTopToAndPopupTo(
+                        route = AppDestination.NewPasswordDestination.route,
+                        popUpToRoute = AppDestination.NewPasswordDestination.route
                     )
                 }
             )

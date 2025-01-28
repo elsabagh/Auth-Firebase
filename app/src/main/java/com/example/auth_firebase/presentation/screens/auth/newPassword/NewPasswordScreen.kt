@@ -11,6 +11,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.auth_firebase.R
 import com.example.auth_firebase.presentation.common.components.PasswordField
 import com.example.auth_firebase.presentation.ui.theme.PrimaryColor
@@ -39,27 +41,35 @@ fun NewPasswordScreen(
     onBackClick: () -> Unit,
 ) {
     val viewModel: NewPasswordViewModel = hiltViewModel()
-    var newPassword by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val onPasswordChange: (String) -> Unit = remember { viewModel::onPasswordChange }
+    val onConfirmPasswordChange: (String) -> Unit =
+        remember { viewModel::onConfirmPasswordChange }
 
     val onBackClickMemoized: () -> Unit = remember { onBackClick }
     val onSavaClickMemoized: () -> Unit = {
-        viewModel.onPasswordChange(newPassword)
-        viewModel.onConfirmPasswordChange(confirmPassword)
-        onSavaClick()
+        viewModel.changePassword()
+
+    }
+    LaunchedEffect(uiState.isPasswordChanged) {
+        if (uiState.isPasswordChanged) {
+            onSavaClick()
+        }
+
     }
 
     NewPasswordContentScreen(
+        uiState = uiState,
         onSavaClick = onSavaClickMemoized,
         onBackClick = onBackClickMemoized,
-        onPasswordChange = { newPassword = it },
-        onConfirmPasswordChange = { confirmPassword = it },
+        onPasswordChange = onPasswordChange,
+        onConfirmPasswordChange = onConfirmPasswordChange,
     )
-
 }
 
 @Composable
 fun NewPasswordContentScreen(
+    uiState: NewPasswordState,
     onSavaClick: () -> Unit,
     onBackClick: () -> Unit,
     onPasswordChange: (String) -> Unit,
@@ -103,24 +113,31 @@ fun NewPasswordContentScreen(
         )
 
         PasswordField(
-            value = "",
+            value = uiState.password,
             placeholder = R.string.password,
             onNewValue = onPasswordChange,
             modifier = modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
-
         )
 
         PasswordField(
-            value = "",
+            value = uiState.confirmPassword,
             placeholder = R.string.confirm_password,
             onNewValue = onConfirmPasswordChange,
             modifier = modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
-
         )
+
+        if (uiState.error != null) {
+            Text(
+                text = uiState.error,
+                color = MaterialTheme.colorScheme.error,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
 
         Button(
             onClick = onSavaClick,
