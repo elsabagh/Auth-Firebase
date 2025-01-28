@@ -6,6 +6,7 @@ Auth-Firebase is an Android application built using Kotlin. This project demonst
 ## Features
 - User Authentication (Login, Registration, and Password Reset)
 - Firebase integration
+- Password update feature after login
 
 ## Getting Started
 
@@ -29,7 +30,9 @@ Auth-Firebase is an Android application built using Kotlin. This project demonst
 - Run the application on an Android device or emulator.
 - Use the app to register or log in using email and password.
 - Use the "Forget Password" feature to reset your password via Firebase.
+- Use the password update feature after logging in to change your password.
 
 ### Recent Updates
 - Added password reset functionality.
 - Updated UI for the "Forget Password" feature.
+- Added password update feature after login.
