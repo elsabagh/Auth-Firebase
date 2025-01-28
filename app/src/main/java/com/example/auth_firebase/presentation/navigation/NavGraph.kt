@@ -81,13 +81,11 @@ fun NavGraph(
             )
         }
         composable(route = AppDestination.ForgotPasswordDestination.route) {
-            val viewModel: ForgetPasswordViewModel = hiltViewModel()
-            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             ForgetPasswordScreen(
                 onSendClick = {
                     appState.navigateSingleTopToAndPopupTo(
-                        route = "${AppDestination.OtpCodeDestination.route}/${uiState.email}",
-                        popUpToRoute = AppDestination.OtpCodeDestination.route
+                        route = SignInDestination.route,
+                        popUpToRoute = SignInDestination.route
                     )
                 },
                 onBackClick = {
