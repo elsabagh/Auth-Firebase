@@ -26,10 +26,13 @@ class HomeViewmodel @Inject constructor(
     )
 
     private val _isAccountSignedOut = MutableStateFlow(false)
-    val isAccountSignedOut: StateFlow<Boolean> = _isAccountSignedOut
+    val isAccountSignedOut get() = _isAccountSignedOut
 
+    /**
+     * Flag indicating whether the user's account has been deleted.
+     */
     private val _isAccountDeleted = MutableStateFlow(false)
-    val isAccountDeleted: StateFlow<Boolean> = _isAccountDeleted
+    val isAccountDeleted get() = _isAccountDeleted
 
     fun signOutFromAccount() {
         viewModelScope.launch {

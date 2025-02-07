@@ -92,4 +92,10 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     // For local unit tests.
     implementation(libs.androidx.work.runtime.ktx)
+
+    // Google Sign-In
+    implementation(libs.google.services.auth)
+
+    implementation("com.facebook.android:facebook-login:16.0.0") // Facebook Login
+
 }

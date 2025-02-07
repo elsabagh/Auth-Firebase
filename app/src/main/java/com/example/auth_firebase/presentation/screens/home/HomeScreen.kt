@@ -26,6 +26,7 @@ fun HomeScreen(
 ) {
 
     val homeViewModel: HomeViewmodel = hiltViewModel()
+    val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
     val isAccountSignedOut by homeViewModel.isAccountSignedOut.collectAsStateWithLifecycle()
     val isAccountDeleted by homeViewModel.isAccountDeleted.collectAsStateWithLifecycle()
 
@@ -35,10 +36,12 @@ fun HomeScreen(
         when {
             isAccountSignedOut -> {
                 onSignOutClick()
+                homeViewModel.resetIsAccountSignedOut()
             }
 
             isAccountDeleted -> {
                 onDeleteMyAccountClick()
+                homeViewModel.resetIsAccountDeleted()
             }
         }
     }
@@ -54,6 +57,7 @@ fun HomeScreen(
     }
 
     HomeScreenContent(
+        uiState = uiState,
         onSignOutClick = onSignOutClickMemoized,
         onDeleteMyAccountClick = onDeleteMyAccountClickMemoized,
         onChangePassClickNav = onChangePassClickNavMemoized
@@ -64,6 +68,7 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(
+    uiState: HomeState,
     onSignOutClick: () -> Unit,
     onDeleteMyAccountClick: () -> Unit,
     onChangePassClickNav: () -> Unit
@@ -76,11 +81,13 @@ fun HomeScreenContent(
     ) {
         Text(text = "Home Screen")
 
-        Button(
-            modifier = Modifier.padding(top = 24.dp),
-            onClick = onSignOutClick
-        ) {
-            Text(text = "Sign Out")
+        if (!uiState.isAnonymousAccount) {
+            Button(
+                modifier = Modifier.padding(top = 24.dp),
+                onClick = onSignOutClick
+            ) {
+                Text(text = "Sign Out")
+            }
         }
 
         Spacer(modifier = Modifier.padding(4.dp))
