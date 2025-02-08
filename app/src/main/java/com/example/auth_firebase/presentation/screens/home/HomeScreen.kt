@@ -88,6 +88,17 @@ fun HomeScreenContent(
             ) {
                 Text(text = "Sign Out")
             }
+
+            Spacer(modifier = Modifier.padding(4.dp))
+
+            Button(
+                modifier = Modifier.padding(top = 24.dp),
+                onClick = {
+                    onChangePassClickNav()
+                }
+            ) {
+                Text(text = "Change Password")
+            }
         }
 
         Spacer(modifier = Modifier.padding(4.dp))
@@ -96,14 +107,6 @@ fun HomeScreenContent(
             Text(text = "Delete Account")
         }
 
-        Button(
-            modifier = Modifier.padding(top = 24.dp),
-            onClick = {
-                onChangePassClickNav()
-            }
-        ) {
-            Text(text = "Change Password")
-        }
     }
 
 }

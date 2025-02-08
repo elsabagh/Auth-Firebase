@@ -149,26 +149,26 @@ fun NewPasswordContentScreen(
             )
         ) {
             Text(
-                text = stringResource(R.string.send_email),
+                text = "Change",
                 color = Color.White,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold
             )
         }
 
-        Text(
-            text = buildAnnotatedString {
-                append("Back to ")
-                withStyle(
-                    style = SpanStyle(color = PrimaryColor)
-                ) {
-                    append(stringResource(R.string.sign_in))
-                }
-            },
-            modifier = modifier
-                .padding(top = 16.dp)
-                .clickable { onBackClick() },
-        )
+//        Text(
+//            text = buildAnnotatedString {
+//                append("Back to ")
+//                withStyle(
+//                    style = SpanStyle(color = PrimaryColor)
+//                ) {
+//                    append(stringResource(R.string.sign_in))
+//                }
+//            },
+//            modifier = modifier
+//                .padding(top = 16.dp)
+//                .clickable { onBackClick() },
+//        )
     }
 }
 
